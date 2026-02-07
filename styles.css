@@ -1,0 +1,474 @@
+:root {
+    --bg-top: #fff7db;
+    --bg-bottom: #d9f3ff;
+    --card: #ffffff;
+    --ink: #24343f;
+    --soft-ink: #3f5966;
+    --accent: #ff6a3d;
+    --ok: #1f9d55;
+    --warn: #d9480f;
+    --line: #d7e7ee;
+    --shadow: 0 14px 34px rgba(36, 52, 63, 0.16);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(165deg, var(--bg-top), var(--bg-bottom));
+    color: var(--ink);
+    font-family: "Nunito", sans-serif;
+}
+
+.app-shell {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px 16px 38px;
+}
+
+.app-header {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.app-header h1 {
+    font-family: "Baloo 2", cursive;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+}
+
+.subtitle {
+    color: var(--soft-ink);
+    font-size: clamp(1rem, 2.6vw, 1.2rem);
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+.hub-card,
+.card {
+    background: var(--card);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+}
+
+.hub-card h2 {
+    text-align: center;
+    font-family: "Baloo 2", cursive;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: 14px;
+}
+
+.game-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.game-grid.three-col {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.game-tile {
+    border: 3px solid var(--line);
+    border-radius: 18px;
+    background: #fafeff;
+    text-align: left;
+    cursor: pointer;
+    padding: 16px;
+    transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.game-tile:hover,
+.game-tile:focus-visible {
+    transform: translateY(-2px);
+    border-color: #90cddf;
+    box-shadow: 0 8px 20px rgba(18, 130, 162, 0.2);
+    outline: none;
+}
+
+.game-tile .emoji {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 4px;
+}
+
+.game-tile .title {
+    display: block;
+    font-family: "Baloo 2", cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.game-tile .desc {
+    display: block;
+    margin-top: 4px;
+    color: var(--soft-ink);
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.section-head h2 {
+    font-family: "Baloo 2", cursive;
+    font-size: clamp(1.4rem, 4.2vw, 2rem);
+}
+
+.head-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.score-pill {
+    background: #e8f8ee;
+    color: #196d3f;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.back-btn,
+.small-btn,
+.primary-btn {
+    border: none;
+    border-radius: 999px;
+    font-family: "Baloo 2", cursive;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.back-btn {
+    background: #e8f3f7;
+    color: #1d4d5d;
+    padding: 8px 14px;
+}
+
+.word-section {
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.word {
+    font-family: "Baloo 2", cursive;
+    font-size: clamp(2.6rem, 9vw, 4.3rem);
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+
+.definition,
+.example,
+.hint,
+.question {
+    font-size: clamp(1rem, 2.8vw, 1.15rem);
+    line-height: 1.4;
+}
+
+.definition {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.quiz-section {
+    margin: 18px 0 12px;
+}
+
+.choices-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice-btn,
+.food-option {
+    border: 3px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    cursor: pointer;
+    padding: 8px;
+    transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.choice-btn:hover,
+.choice-btn:focus-visible,
+.food-option:hover,
+.food-option:focus-visible {
+    transform: translateY(-2px);
+    border-color: #8ac7db;
+    box-shadow: 0 8px 18px rgba(18, 130, 162, 0.2);
+    outline: none;
+}
+
+.choice-btn img,
+.food-option img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.choice-btn.correct {
+    border-color: var(--ok);
+}
+
+.choice-btn.incorrect {
+    border-color: var(--warn);
+}
+
+.feedback-section {
+    min-height: 34px;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+}
+
+.feedback {
+    font-size: clamp(1rem, 2.8vw, 1.14rem);
+    font-weight: 700;
+    text-align: center;
+}
+
+.feedback.success {
+    color: var(--ok);
+}
+
+.feedback.error {
+    color: var(--warn);
+}
+
+.small-btn {
+    padding: 8px 16px;
+    background: #ffe7dc;
+    color: #8d2d0f;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #ff6a3d, #ff9a3d);
+    color: #fff;
+    padding: 12px 28px;
+    box-shadow: 0 10px 20px rgba(255, 106, 61, 0.34);
+}
+
+.primary-btn:active {
+    transform: translateY(1px);
+}
+
+.pill {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #eaf7fb;
+    color: #1d4d5d;
+    font-weight: 700;
+}
+
+.food-board {
+    margin: 6px 0 14px;
+}
+
+.food-chain-column {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+}
+
+.chain-node {
+    width: 174px;
+    height: 174px;
+    border: 3px solid var(--line);
+    background: #fcffff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 10px;
+    position: relative;
+    text-align: center;
+}
+
+.chain-node .badge {
+    font-size: 2.4rem;
+    line-height: 1;
+}
+
+.chain-node .label {
+    font-size: clamp(0.92rem, 2.5vw, 1.04rem);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.chain-node::after {
+    content: "↓";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -18px;
+    color: #78a9ba;
+    font-weight: 700;
+}
+
+.chain-node:last-child::after {
+    content: "";
+}
+
+.drop-zone {
+    border-style: dashed;
+    border-color: #90cddf;
+    background: #f2fbff;
+    font-weight: 700;
+    color: #1f6177;
+}
+
+.drop-zone.filled {
+    border-style: solid;
+    border-color: var(--ok);
+}
+
+.drop-zone.active {
+    border-color: #2d9cc0;
+    box-shadow: 0 0 0 4px rgba(45, 156, 192, 0.18);
+}
+
+.food-options-wrap {
+    border-top: 1px solid #edf4f7;
+    padding-top: 12px;
+}
+
+.food-options {
+    margin-top: 10px;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.food-option[draggable="true"] {
+    user-select: none;
+}
+
+.food-option.used {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.hungry-animal {
+    text-align: center;
+    margin: 8px 0 12px;
+}
+
+.hungry-target {
+    margin: 10px auto 0;
+    width: min(320px, 100%);
+}
+
+.hungry-target .target-card {
+    border: 4px solid #9fd3e2;
+    border-radius: 20px;
+    padding: 20px;
+    background: #fbfeff;
+}
+
+.hungry-target .target-emoji {
+    font-size: 6.2rem;
+    line-height: 1;
+}
+
+.hungry-target .target-name {
+    margin-top: 6px;
+    font-family: "Baloo 2", cursive;
+    font-size: 2rem;
+}
+
+#hungry-options .choice-btn img {
+    max-height: 110px;
+    object-fit: contain;
+}
+
+.fireworks {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.spark {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: pop 900ms ease-out forwards;
+}
+
+@keyframes pop {
+    0% {
+        transform: translate(0, 0) scale(0.4);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--dx), var(--dy)) scale(1.2);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 900px) {
+    .game-grid.three-col {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 780px) {
+    .game-grid,
+    .game-grid.three-col,
+    .choices-grid,
+    .food-options {
+        grid-template-columns: 1fr;
+    }
+
+    .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .head-right {
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .chain-node {
+        width: 160px;
+        height: 160px;
+    }
+
+    .chain-node .badge {
+        font-size: 2rem;
+    }
+}

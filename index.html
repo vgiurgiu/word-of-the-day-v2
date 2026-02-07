@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kid Learning Games</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="app-header">
+            <h1>Kid Learning Games</h1>
+            <p class="subtitle">Pick a game and play together.</p>
+        </header>
+
+        <main>
+            <section id="home-screen" class="screen active" aria-label="Game selector">
+                <div class="hub-card">
+                    <h2>Choose a game</h2>
+                    <div class="game-grid three-col">
+                        <button id="open-word-game" class="game-tile" type="button">
+                            <span class="emoji" aria-hidden="true">📖</span>
+                            <span class="title">Word of the Day</span>
+                            <span class="desc">Read the word and pick the right picture.</span>
+                        </button>
+                        <button id="open-food-game" class="game-tile" type="button">
+                            <span class="emoji" aria-hidden="true">🧩</span>
+                            <span class="title">Food Chain</span>
+                            <span class="desc">Drag the missing organism into the chain.</span>
+                        </button>
+                        <button id="open-hungry-game" class="game-tile" type="button">
+                            <span class="emoji" aria-hidden="true">🍽️</span>
+                            <span class="title">Hungry Animals</span>
+                            <span class="desc">Pick the food this animal can eat.</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="word-screen" class="screen" aria-label="Word of the Day game">
+                <div class="card">
+                    <div class="section-head">
+                        <h2>Word of the Day</h2>
+                        <div class="head-right">
+                            <p id="word-score" class="score-pill" aria-live="polite">Points: 0</p>
+                            <button class="back-btn" type="button" data-back>Back to Games</button>
+                        </div>
+                    </div>
+
+                    <section class="word-section" aria-live="polite">
+                        <h3 id="current-word" class="word">Dog</h3>
+                        <p id="definition" class="definition">A dog is a pet animal that barks.</p>
+                        <p id="example" class="example">Example: "The dog runs in the park."</p>
+                    </section>
+
+                    <section class="quiz-section" aria-label="Picture choices">
+                        <div id="choices" class="choices-grid"></div>
+                    </section>
+
+                    <section class="feedback-section">
+                        <p id="feedback" class="feedback" role="status"></p>
+                        <button id="try-again-btn" class="small-btn" type="button" hidden>Try again</button>
+                    </section>
+
+                    <div class="controls">
+                        <button id="more-btn" class="primary-btn" type="button">More</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="food-screen" class="screen" aria-label="Food Chain game">
+                <div class="card">
+                    <div class="section-head">
+                        <h2>Food Chain</h2>
+                        <div class="head-right">
+                            <p id="food-score" class="score-pill" aria-live="polite">Points: 0</p>
+                            <button class="back-btn" type="button" data-back>Back to Games</button>
+                        </div>
+                    </div>
+
+                    <p id="food-environment" class="pill">Environment: Ocean</p>
+
+                    <section class="food-board" aria-live="polite">
+                        <div id="food-chain-column" class="food-chain-column"></div>
+                    </section>
+
+                    <section class="food-options-wrap">
+                        <p class="hint">Drag an option into the missing circle.</p>
+                        <div id="food-options" class="food-options"></div>
+                    </section>
+
+                    <section class="feedback-section">
+                        <p id="food-feedback" class="feedback" role="status"></p>
+                    </section>
+
+                    <div class="controls">
+                        <button id="next-chain-btn" class="primary-btn" type="button">Next Chain</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="hungry-screen" class="screen" aria-label="Hungry Animals game">
+                <div class="card">
+                    <div class="section-head">
+                        <h2>Hungry Animals</h2>
+                        <div class="head-right">
+                            <p id="hungry-score" class="score-pill" aria-live="polite">Points: 0</p>
+                            <button class="back-btn" type="button" data-back>Back to Games</button>
+                        </div>
+                    </div>
+
+                    <section class="hungry-animal" aria-live="polite">
+                        <p class="question">What can this animal eat?</p>
+                        <div id="hungry-target" class="hungry-target"></div>
+                    </section>
+
+                    <section class="quiz-section" aria-label="Food options">
+                        <div id="hungry-options" class="choices-grid"></div>
+                    </section>
+
+                    <section class="feedback-section">
+                        <p id="hungry-feedback" class="feedback" role="status"></p>
+                    </section>
+
+                    <div class="controls">
+                        <button id="next-hungry-btn" class="primary-btn" type="button">Next Animal</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="fireworks" class="fireworks" aria-hidden="true"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
