@@ -349,7 +349,11 @@ function shuffle(arr) {
     return cloned;
 }
 
-function imageDataUrl(emoji, label) {
+function imageDataUrl(emoji, label, showLabel = true) {
+    const labelMarkup = showLabel
+        ? `<text x="130" y="161" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#21434f">${label}</text>`
+        : "";
+
     const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="260" height="190" viewBox="0 0 260 190">
             <defs>
@@ -360,7 +364,7 @@ function imageDataUrl(emoji, label) {
             </defs>
             <rect x="0" y="0" width="260" height="190" rx="18" fill="url(#bg)"/>
             <text x="130" y="95" text-anchor="middle" dominant-baseline="middle" font-size="74">${emoji}</text>
-            <text x="130" y="161" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#21434f">${label}</text>
+            ${labelMarkup}
         </svg>
     `;
 
@@ -464,24 +468,31 @@ function buildWordExample(item) {
     return `Example: "I learned the word ${lower}."`;
 }
 
-function launchFireworks() {
+function launchFireworks(intensity = 1) {
     const colors = ["#ff6a3d", "#ffb302", "#2fa84f", "#1282a2", "#ff3f80"];
-    const bursts = 36;
+    const bursts = 36 * intensity;
+    const waves = Math.max(1, intensity);
 
-    for (let i = 0; i < bursts; i += 1) {
-        const spark = document.createElement("span");
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 80 + Math.random() * 220;
+    for (let wave = 0; wave < waves; wave += 1) {
+        const waveDelay = wave * 160;
 
-        spark.className = "spark";
-        spark.style.left = `${20 + Math.random() * 60}%`;
-        spark.style.top = `${24 + Math.random() * 38}%`;
-        spark.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        spark.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
-        spark.style.setProperty("--dy", `${Math.sin(angle) * distance}px`);
+        for (let i = 0; i < bursts / waves; i += 1) {
+            const spark = document.createElement("span");
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 80 + Math.random() * 220;
 
-        fireworksEl.appendChild(spark);
-        setTimeout(() => spark.remove(), 1000);
+            spark.className = "spark";
+            spark.style.left = `${20 + Math.random() * 60}%`;
+            spark.style.top = `${24 + Math.random() * 38}%`;
+            spark.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            spark.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+            spark.style.setProperty("--dy", `${Math.sin(angle) * distance}px`);
+
+            setTimeout(() => {
+                fireworksEl.appendChild(spark);
+                setTimeout(() => spark.remove(), 1000);
+            }, waveDelay);
+        }
     }
 }
 
@@ -507,7 +518,7 @@ function clearWordChoiceStyles() {
 }
 
 function updateWordScore() {
-    wordScoreEl.textContent = `Points: ${wordScore}`;
+    wordScoreEl.textContent = `⭐ Points: ${wordScore}`;
 }
 
 function awardWordPoints(points) {
@@ -564,7 +575,7 @@ function renderNextWordRound() {
         btn.type = "button";
         btn.className = "choice-btn";
         btn.setAttribute("aria-label", option.label);
-        btn.innerHTML = `<img src="${imageDataUrl(option.emoji, option.label)}" alt="${option.label}" />`;
+        btn.innerHTML = `<img src="${imageDataUrl(option.emoji, option.label, false)}" alt="${option.label}" />`;
 
         btn.addEventListener("click", () => {
             if (isWordRoundComplete) {
@@ -579,7 +590,7 @@ function renderNextWordRound() {
                 setWordFeedback("Great job! You found the right picture! +10 points", "success");
                 tryAgainBtn.hidden = true;
                 awardWordPoints(10);
-                launchFireworks();
+                launchFireworks(2);
                 return;
             }
 
