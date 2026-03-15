@@ -13,6 +13,7 @@ const feedbackEl = document.getElementById("feedback");
 const moreBtn = document.getElementById("more-btn");
 const tryAgainBtn = document.getElementById("try-again-btn");
 const wordScoreEl = document.getElementById("word-score");
+const wordHighScoreEl = document.getElementById("word-highscore");
 
 const foodEnvironmentEl = document.getElementById("food-environment");
 const foodChainColumnEl = document.getElementById("food-chain-column");
@@ -20,12 +21,14 @@ const foodOptionsEl = document.getElementById("food-options");
 const foodFeedbackEl = document.getElementById("food-feedback");
 const nextChainBtn = document.getElementById("next-chain-btn");
 const foodScoreEl = document.getElementById("food-score");
+const foodHighScoreEl = document.getElementById("food-highscore");
 
 const hungryTargetEl = document.getElementById("hungry-target");
 const hungryOptionsEl = document.getElementById("hungry-options");
 const hungryFeedbackEl = document.getElementById("hungry-feedback");
 const nextHungryBtn = document.getElementById("next-hungry-btn");
 const hungryScoreEl = document.getElementById("hungry-score");
+const hungryHighScoreEl = document.getElementById("hungry-highscore");
 
 const fireworksEl = document.getElementById("fireworks");
 
@@ -321,19 +324,22 @@ const hungryFoodMap = new Map(hungryFoodPool.map((item) => [item.label, item]));
 let currentWord = null;
 let isWordRoundComplete = false;
 let wordDeck = [];
-let wordScore = Number(window.localStorage.getItem("word-game-score") || "0");
+let wordScore = 0;
+let wordHighScore = Number(window.localStorage.getItem("word-game-high-score") || "0");
 
 let currentFoodIndex = 0;
 let currentMissingIndex = -1;
 let selectedFoodOptionId = "";
 let foodRoundComplete = false;
-let foodScore = Number(window.localStorage.getItem("food-game-score") || "0");
+let foodScore = 0;
+let foodHighScore = Number(window.localStorage.getItem("food-game-high-score") || "0");
 
 let currentHungryAnimal = null;
 let currentHungryCorrectLabel = "";
 let hungryRoundComplete = false;
 let hungryDeck = [];
-let hungryScore = Number(window.localStorage.getItem("hungry-game-score") || "0");
+let hungryScore = 0;
+let hungryHighScore = Number(window.localStorage.getItem("hungry-game-high-score") || "0");
 
 function showScreen(screenName) {
     Object.values(screens).forEach((screen) => screen.classList.remove("active"));
@@ -519,36 +525,50 @@ function clearWordChoiceStyles() {
 
 function updateWordScore() {
     wordScoreEl.textContent = `⭐ Points: ${wordScore}`;
+    wordHighScoreEl.textContent = `🏆 Best: ${wordHighScore}`;
 }
 
 function awardWordPoints(points) {
     wordScore += points;
-    window.localStorage.setItem("word-game-score", String(wordScore));
+    if (wordScore > wordHighScore) {
+        wordHighScore = wordScore;
+        window.localStorage.setItem("word-game-high-score", String(wordHighScore));
+    }
     updateWordScore();
 }
 
 function updateFoodScore() {
     foodScoreEl.textContent = `Points: ${foodScore}`;
+    foodHighScoreEl.textContent = `🏆 Best: ${foodHighScore}`;
 }
 
 function awardFoodPoints(points) {
     foodScore += points;
-    window.localStorage.setItem("food-game-score", String(foodScore));
+    if (foodScore > foodHighScore) {
+        foodHighScore = foodScore;
+        window.localStorage.setItem("food-game-high-score", String(foodHighScore));
+    }
     updateFoodScore();
 }
 
 function updateHungryScore() {
     hungryScoreEl.textContent = `Points: ${hungryScore}`;
+    hungryHighScoreEl.textContent = `🏆 Best: ${hungryHighScore}`;
 }
 
 function awardHungryPoints(points) {
     hungryScore += points;
-    window.localStorage.setItem("hungry-game-score", String(hungryScore));
+    if (hungryScore > hungryHighScore) {
+        hungryHighScore = hungryScore;
+        window.localStorage.setItem("hungry-game-high-score", String(hungryHighScore));
+    }
     updateHungryScore();
 }
 
 function getWordOptions(correctWord) {
-    const distractors = shuffle(words.filter((item) => item.word !== correctWord.word)).slice(0, 2);
+    const sameType = shuffle(words.filter((item) => item.word !== correctWord.word && item.type === correctWord.type));
+    const fallback = shuffle(words.filter((item) => item.word !== correctWord.word && item.type !== correctWord.type));
+    const distractors = [...sameType, ...fallback].slice(0, 2);
 
     return shuffle([
         { label: correctWord.word, emoji: correctWord.emoji, isCorrect: true },
@@ -862,16 +882,22 @@ function moveToNextChain() {
 
 function initNavigation() {
     document.getElementById("open-word-game").addEventListener("click", () => {
+        wordScore = 0;
+        updateWordScore();
         showScreen("word");
         renderNextWordRound();
     });
 
     document.getElementById("open-food-game").addEventListener("click", () => {
+        foodScore = 0;
+        updateFoodScore();
         showScreen("food");
         renderFoodRound(currentFoodIndex);
     });
 
     document.getElementById("open-hungry-game").addEventListener("click", () => {
+        hungryScore = 0;
+        updateHungryScore();
         showScreen("hungry");
         renderNextHungryRound();
     });

@@ -145,6 +145,11 @@ body {
     font-size: 0.95rem;
 }
 
+.highscore-pill {
+    background: #fff8e1;
+    color: #7a5000;
+}
+
 .back-btn,
 .small-btn,
 .primary-btn {
