@@ -420,6 +420,87 @@ function imageDataUrl(emoji, label, showLabel = true) {
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
+function emojiToUrl(emoji) {
+    const codepoints = [...emoji]
+        .map(ch => ch.codePointAt(0).toString(16))
+        .filter(code => code !== 'fe0f') // strip variation selector-16 for simple emoji
+        .join('-');
+    return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${codepoints}.svg`;
+}
+
+// ── Stock Image Fetching (Wikipedia REST API — free, no key needed) ──────────
+
+// Wikipedia article title overrides for labels that don't match directly
+const IMAGE_SEARCH_OVERRIDES = {
+    // Word game animals
+    "Hen": "Chicken", "Slug": "Slug (animal)", "Mole": "Mole (animal)",
+    "Colt": "Foal", "Calf": "Calf", "Hare": "Hare",
+    // Word game food/nature
+    "Fig": "Common fig", "Date": "Date (fruit)", "Oats": "Oat",
+    "Yam": "Yam", "Iris": "Iris (plant)", "Soil": "Soil",
+    "Fern": "Fern",
+    // Word game vehicles
+    "Van": "Van (automobile)", "Tram": "Tram",
+    // Food Chain
+    "Leopard Seal": "Leopard seal", "Reef Shark": "Reef shark",
+    "Sea Urchin": "Sea urchin", "Sea Otter": "Sea otter",
+    "Fruit Tree": "Fruit tree", "Acorns": "Acorn",
+    "Kangaroo Rat": "Kangaroo rat", "Rattlesnake": "Rattlesnake",
+    "Snowy Owl": "Snowy owl", "Tundra Plants": "Arctic tundra",
+    "Insect Larva": "Larva", "Phytoplankton": "Phytoplankton",
+    // Hungry Animals food
+    "Pond Plants": "Aquatic plant", "Eucalyptus Leaves": "Eucalyptus",
+    "Polar Bear": "Polar bear", "Crumbs": "Breadcrumbs", "Hay": "Hay",
+};
+
+// Search terms for the time-game activity emojis
+const EMOJI_ACTIVITY_TERMS = {
+    "🪥": "toothbrush", "🤧": "sneeze",     "🛁": "bathtub",
+    "🍽️": "eating",    "🧦": "sock",        "👏": "applause",
+    "😴": "sleep",      "🏫": "school",      "🎉": "party",
+    "🎬": "cinema",     "🌅": "sunrise",     "📅": "calendar",
+    "🏖️": "beach",     "🎂": "birthday cake","📆": "calendar",
+    "☃️": "snowman",   "🌱": "seedling",    "🍂": "autumn leaves",
+    "🎄": "Christmas tree",
+};
+
+const imageCache = new Map();
+
+async function getImage(label, fallbackEmoji) {
+    if (imageCache.has(label)) return imageCache.get(label);
+    const term = IMAGE_SEARCH_OVERRIDES[label] || label;
+    try {
+        const res = await fetch(
+            `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(term)}`,
+            { signal: AbortSignal.timeout(5000) }
+        );
+        if (res.ok) {
+            const data = await res.json();
+            if (data.thumbnail?.source) {
+                imageCache.set(label, data.thumbnail.source);
+                return data.thumbnail.source;
+            }
+        }
+    } catch (_) { /* fall through to Twemoji */ }
+    const fallback = emojiToUrl(fallbackEmoji);
+    imageCache.set(label, fallback);
+    return fallback;
+}
+
+// Finds all <img data-label> in container, fills src from cache or async fetch
+function applyImages(container) {
+    container.querySelectorAll("img[data-label]").forEach(img => {
+        const label = img.dataset.label;
+        const emoji = img.dataset.emoji || "❓";
+        const cached = imageCache.get(label);
+        if (cached) {
+            img.src = cached;
+        } else {
+            getImage(label, emoji).then(url => { img.src = url; });
+        }
+    });
+}
+
 function withArticle(word) {
     if (/^[aeiou]/i.test(word)) {
         return `an ${word.toLowerCase()}`;
@@ -630,15 +711,18 @@ function renderNextWordRound() {
     wordEl.textContent = currentWord.word;
     definitionEl.textContent = currentWord.definition;
     exampleEl.textContent = currentWord.example;
+    const quizHighlight = document.getElementById("quiz-word-highlight");
+    if (quizHighlight) quizHighlight.textContent = currentWord.word.toLowerCase();
 
     choicesEl.innerHTML = "";
 
     options.forEach((option) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "choice-btn";
+        btn.className = "choice-btn word-choice-btn";
         btn.setAttribute("aria-label", option.label);
-        btn.innerHTML = `<img src="${imageDataUrl(option.emoji, option.label, false)}" alt="${option.label}" />`;
+        btn.innerHTML = `<img data-label="${option.label}" data-emoji="${option.emoji}" class="word-btn-img" alt="${option.label}" />`;
+        applyImages(btn);
 
         btn.addEventListener("click", () => {
             if (isWordRoundComplete) {
@@ -703,9 +787,10 @@ function renderChainNode(organism) {
     const node = document.createElement("div");
     node.className = "chain-node";
     node.innerHTML = `
-        <span class="badge" aria-hidden="true">${organism.emoji}</span>
+        <img data-label="${organism.label}" data-emoji="${organism.emoji}" class="chain-node-img" alt="${organism.label}" />
         <span class="label">${organism.label}</span>
     `;
+    applyImages(node);
     return node;
 }
 
@@ -716,9 +801,10 @@ function clearFoodOptionSelection() {
 
 function fillDropZoneWithOrganism(dropZone, organism) {
     dropZone.innerHTML = `
-        <span class="badge" aria-hidden="true">${organism.emoji}</span>
+        <img data-label="${organism.label}" data-emoji="${organism.emoji}" class="chain-node-img" alt="${organism.label}" />
         <span class="label">${organism.label}</span>
     `;
+    applyImages(dropZone);
     dropZone.classList.add("filled");
 }
 
@@ -812,12 +898,13 @@ function renderFoodRound(index) {
     options.forEach((option) => {
         const optionBtn = document.createElement("button");
         optionBtn.type = "button";
-        optionBtn.className = "food-option";
+        optionBtn.className = "food-option food-option-stacked";
         optionBtn.draggable = true;
         optionBtn.setAttribute("data-option-id", option.id);
         optionBtn.setAttribute("data-label", option.label);
         optionBtn.setAttribute("aria-label", option.label);
-        optionBtn.innerHTML = `<img src="${imageDataUrl(option.emoji, option.label)}" alt="${option.label}" />`;
+        optionBtn.innerHTML = `<img data-label="${option.label}" data-emoji="${option.emoji}" class="food-opt-img" alt="${option.label}" /><span class="food-opt-label">${option.label}</span>`;
+        applyImages(optionBtn);
 
         optionBtn.addEventListener("dragstart", (event) => {
             event.dataTransfer.setData("text/plain", option.id);
@@ -878,20 +965,22 @@ function renderNextHungryRound() {
     setHungryFeedback();
 
     hungryTargetEl.innerHTML = `
-        <div class="target-card">
-            <div class="target-emoji" aria-hidden="true">${currentHungryAnimal.emoji}</div>
-            <p class="target-name">${currentHungryAnimal.animal}</p>
-        </div>
+        <span class="animal-circle">
+            <img data-label="${currentHungryAnimal.animal}" data-emoji="${currentHungryAnimal.emoji}" class="animal-img" alt="${currentHungryAnimal.animal}" />
+        </span>
+        <span class="animal-circle-name">${currentHungryAnimal.animal}</span>
     `;
+    applyImages(hungryTargetEl);
 
     hungryOptionsEl.innerHTML = "";
 
     options.forEach((option) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "choice-btn";
+        btn.className = "choice-btn hungry-choice-btn";
         btn.setAttribute("aria-label", option.label);
-        btn.innerHTML = `<img src="${imageDataUrl(option.emoji, option.label)}" alt="${option.label}" />`;
+        btn.innerHTML = `<img data-label="${option.label}" data-emoji="${option.emoji}" class="hungry-btn-img" alt="${option.label}" /><span class="hungry-btn-label">${option.label}</span>`;
+        applyImages(btn);
 
         btn.addEventListener("click", () => {
             if (hungryRoundComplete) {
@@ -1010,7 +1099,9 @@ function renderNextTimeRound() {
     timeRoundComplete = false;
     setTimeFeedback();
 
-    timeActivityEl.textContent = currentTimeQuestion.emoji;
+    const activityTerm = EMOJI_ACTIVITY_TERMS[currentTimeQuestion.emoji] || currentTimeQuestion.emoji;
+    timeActivityEl.innerHTML = `<img data-label="${activityTerm}" data-emoji="${currentTimeQuestion.emoji}" class="time-activity-img" alt="${activityTerm}" />`;
+    applyImages(timeActivityEl);
     timeActivityEl.style.animation = "none";
     void timeActivityEl.offsetWidth;
     timeActivityEl.style.animation = "";
@@ -1029,7 +1120,7 @@ function renderNextTimeRound() {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "choice-btn time-choice-btn";
-        btn.innerHTML = `<span class="time-btn-emoji">${emojiPart}</span><span class="time-btn-label">${rest.join(" ")}</span>`;
+        btn.innerHTML = `<img src="${emojiToUrl(emojiPart)}" alt="" class="time-btn-img" loading="lazy" /><span class="time-btn-label">${rest.join(" ")}</span>`;
 
         btn.addEventListener("click", () => {
             if (timeRoundComplete) return;
