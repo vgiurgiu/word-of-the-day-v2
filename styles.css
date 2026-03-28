@@ -299,46 +299,53 @@ body {
 }
 
 .food-chain-column {
-    display: grid;
-    justify-items: center;
-    gap: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 4px;
 }
 
 .chain-node {
-    width: 174px;
-    height: 174px;
+    width: 140px;
+    min-height: 170px;
     border: 3px solid var(--line);
-    background: #fcffff;
-    border-radius: 50%;
+    background: linear-gradient(145deg, #f7fbff, #d8eff8);
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 6px;
-    padding: 10px;
+    gap: 8px;
+    padding: 14px 10px;
     position: relative;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .chain-node .badge {
-    font-size: 2.4rem;
+    font-size: 5rem;
     line-height: 1;
 }
 
 .chain-node .label {
-    font-size: clamp(0.92rem, 2.5vw, 1.04rem);
+    font-size: clamp(0.88rem, 2.5vw, 1rem);
     font-weight: 700;
     line-height: 1.2;
 }
 
 .chain-node::after {
-    content: "↓";
+    content: "→";
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -18px;
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
     color: #78a9ba;
     font-weight: 700;
+    font-size: 1.4rem;
+    z-index: 1;
 }
 
 .chain-node:last-child::after {
@@ -453,8 +460,7 @@ body {
 @media (max-width: 780px) {
     .game-grid,
     .game-grid.three-col,
-    .choices-grid,
-    .food-options {
+    .choices-grid {
         grid-template-columns: 1fr;
     }
 
@@ -469,11 +475,11 @@ body {
     }
 
     .chain-node {
-        width: 160px;
-        height: 160px;
+        width: 110px;
+        min-height: 140px;
     }
 
     .chain-node .badge {
-        font-size: 2rem;
+        font-size: 3.8rem;
     }
 }

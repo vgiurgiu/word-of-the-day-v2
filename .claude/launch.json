@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "word-of-the-day",
+      "runtimeExecutable": "ruby",
+      "runtimeArgs": ["/tmp/serve2.rb"],
+      "port": 3456,
+      "autoPort": false
+    }
+  ]
+}
