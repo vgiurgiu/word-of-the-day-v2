@@ -2,7 +2,8 @@ const screens = {
     home: document.getElementById("home-screen"),
     word: document.getElementById("word-screen"),
     food: document.getElementById("food-screen"),
-    hungry: document.getElementById("hungry-screen")
+    hungry: document.getElementById("hungry-screen"),
+    time: document.getElementById("time-screen")
 };
 
 const wordEl = document.getElementById("current-word");
@@ -29,6 +30,14 @@ const hungryFeedbackEl = document.getElementById("hungry-feedback");
 const nextHungryBtn = document.getElementById("next-hungry-btn");
 const hungryScoreEl = document.getElementById("hungry-score");
 const hungryHighScoreEl = document.getElementById("hungry-highscore");
+
+const timeActivityEl = document.getElementById("time-activity");
+const timeQuestionTextEl = document.getElementById("time-question-text");
+const timeOptionsEl = document.getElementById("time-options");
+const timeFeedbackEl = document.getElementById("time-feedback");
+const nextTimeBtn = document.getElementById("next-time-btn");
+const timeScoreEl = document.getElementById("time-score");
+const timeHighScoreEl = document.getElementById("time-highscore");
 
 const fireworksEl = document.getElementById("fireworks");
 
@@ -313,6 +322,34 @@ const hungryAnimals = [
     { animal: "Hyena", emoji: "🦴", diet: ["Meat", "Zebra"] }
 ];
 
+const timeQuestions = [
+    // Seconds & Minutes
+    { emoji: "🪥", question: "Brushing teeth takes about...",   correct: "⏱️ 2 minutes",  distractors: ["⚡ 2 seconds",  "🕐 2 hours"]   },
+    { emoji: "🤧", question: "A sneeze takes about...",          correct: "⚡ 1 second",   distractors: ["⏱️ 1 minute",   "🕐 1 hour"]    },
+    { emoji: "🛁", question: "A bath takes about...",            correct: "⏱️ 20 minutes", distractors: ["⚡ 20 seconds", "🕐 20 hours"]  },
+    { emoji: "🍽️", question: "Eating lunch takes about...",     correct: "⏱️ 15 minutes", distractors: ["⚡ 15 seconds", "🕐 15 hours"]  },
+    { emoji: "🧦", question: "Putting on socks takes about...", correct: "⚡ 30 seconds", distractors: ["⏱️ 30 minutes", "🕐 30 hours"]  },
+    { emoji: "👏", question: "One clap takes about...",          correct: "⚡ 1 second",   distractors: ["⏱️ 1 minute",   "🕐 1 hour"]    },
+    // Hours
+    { emoji: "😴", question: "Sleeping at night takes about...", correct: "🕐 10 hours",  distractors: ["⏱️ 10 minutes", "📅 10 days"]   },
+    { emoji: "🏫", question: "School lasts about...",            correct: "🕐 6 hours",   distractors: ["⏱️ 6 minutes",  "📅 6 days"]    },
+    { emoji: "🎉", question: "A party lasts about...",           correct: "🕐 3 hours",   distractors: ["⏱️ 3 minutes",  "📅 3 days"]    },
+    { emoji: "🎬", question: "A movie lasts about...",           correct: "🕐 2 hours",   distractors: ["⏱️ 2 minutes",  "📅 2 days"]    },
+    { emoji: "🌅", question: "Daytime lasts about...",           correct: "🕐 12 hours",  distractors: ["⏱️ 12 minutes", "📅 12 days"]   },
+    // Days
+    { emoji: "📅", question: "Days in a week?",                  correct: "📅 7 days",    distractors: ["📅 5 days",      "📅 10 days"]   },
+    { emoji: "🏖️", question: "A weekend lasts...",              correct: "📅 2 days",    distractors: ["🗓️ 2 weeks",    "📆 2 months"]  },
+    { emoji: "🏫", question: "School days in a week?",           correct: "📅 5 days",    distractors: ["📅 3 days",      "📅 7 days"]    },
+    // Months & Seasons
+    { emoji: "🎂", question: "Your birthday comes once a...",    correct: "🎉 year",      distractors: ["📆 month",       "🗓️ week"]      },
+    { emoji: "📆", question: "Months in a year?",                correct: "📆 12 months", distractors: ["📆 7 months",    "📆 24 months"] },
+    { emoji: "☃️", question: "Winter lasts about...",           correct: "📆 3 months",  distractors: ["🗓️ 3 weeks",    "🎉 3 years"]   },
+    { emoji: "🌱", question: "Spring lasts about...",            correct: "📆 3 months",  distractors: ["🗓️ 3 weeks",    "🎉 3 years"]   },
+    { emoji: "🍂", question: "Seasons in a year?",               correct: "🌸 4 seasons", distractors: ["🌸 2 seasons",   "🌸 6 seasons"] },
+    { emoji: "🎄", question: "Christmas comes once a...",        correct: "🎉 year",      distractors: ["📆 month",       "🗓️ week"]      },
+    { emoji: "🏖️", question: "Summer break lasts about...",     correct: "📆 2 months",  distractors: ["🗓️ 2 weeks",    "🎉 2 years"]   },
+];
+
 const words = wordSeed.map((item) => ({
     ...item,
     definition: buildWordDefinition(item),
@@ -340,6 +377,12 @@ let hungryRoundComplete = false;
 let hungryDeck = [];
 let hungryScore = 0;
 let hungryHighScore = Number(window.localStorage.getItem("hungry-game-high-score") || "0");
+
+let currentTimeQuestion = null;
+let timeRoundComplete = false;
+let timeDeck = [];
+let timeScore = 0;
+let timeHighScore = Number(window.localStorage.getItem("time-game-high-score") || "0");
 
 function showScreen(screenName) {
     Object.values(screens).forEach((screen) => screen.classList.remove("active"));
@@ -902,6 +945,13 @@ function initNavigation() {
         renderNextHungryRound();
     });
 
+    document.getElementById("open-time-game").addEventListener("click", () => {
+        timeScore = 0;
+        updateTimeScore();
+        showScreen("time");
+        renderNextTimeRound();
+    });
+
     document.querySelectorAll("[data-back]").forEach((btn) => {
         btn.addEventListener("click", () => showScreen("home"));
     });
@@ -930,10 +980,88 @@ function initHungryGame() {
     nextHungryBtn.addEventListener("click", renderNextHungryRound);
 }
 
+function getNextTimeQuestion() {
+    if (timeDeck.length === 0) timeDeck = shuffle([...timeQuestions]);
+    return timeDeck.pop();
+}
+
+function setTimeFeedback(message = "", type = "") {
+    timeFeedbackEl.textContent = message;
+    timeFeedbackEl.className = "feedback";
+    if (type) timeFeedbackEl.classList.add(type);
+}
+
+function updateTimeScore() {
+    timeScoreEl.textContent = `Points: ${timeScore}`;
+    timeHighScoreEl.textContent = `🏆 Best: ${timeHighScore}`;
+}
+
+function awardTimePoints(points) {
+    timeScore += points;
+    if (timeScore > timeHighScore) {
+        timeHighScore = timeScore;
+        window.localStorage.setItem("time-game-high-score", String(timeHighScore));
+    }
+    updateTimeScore();
+}
+
+function renderNextTimeRound() {
+    currentTimeQuestion = getNextTimeQuestion();
+    timeRoundComplete = false;
+    setTimeFeedback();
+
+    timeActivityEl.textContent = currentTimeQuestion.emoji;
+    timeActivityEl.style.animation = "none";
+    void timeActivityEl.offsetWidth;
+    timeActivityEl.style.animation = "";
+
+    timeQuestionTextEl.textContent = currentTimeQuestion.question;
+
+    const options = shuffle([
+        { label: currentTimeQuestion.correct, isCorrect: true },
+        { label: currentTimeQuestion.distractors[0], isCorrect: false },
+        { label: currentTimeQuestion.distractors[1], isCorrect: false },
+    ]);
+
+    timeOptionsEl.innerHTML = "";
+    options.forEach((opt) => {
+        const [emojiPart, ...rest] = opt.label.split(" ");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice-btn time-choice-btn";
+        btn.innerHTML = `<span class="time-btn-emoji">${emojiPart}</span><span class="time-btn-label">${rest.join(" ")}</span>`;
+
+        btn.addEventListener("click", () => {
+            if (timeRoundComplete) return;
+            timeOptionsEl.querySelectorAll(".choice-btn").forEach((b) =>
+                b.classList.remove("correct", "incorrect")
+            );
+            if (opt.isCorrect) {
+                timeRoundComplete = true;
+                btn.classList.add("correct");
+                setTimeFeedback("Great job! That's right! +10 points", "success");
+                awardTimePoints(10);
+                launchFireworks();
+            } else {
+                btn.classList.add("incorrect");
+                setTimeFeedback("Not quite! Try again.", "error");
+            }
+        });
+
+        timeOptionsEl.appendChild(btn);
+    });
+}
+
+function initTimeGame() {
+    updateTimeScore();
+    nextTimeBtn.addEventListener("click", renderNextTimeRound);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initNavigation();
     initWordGame();
     initFoodGame();
     initHungryGame();
+    initTimeGame();
     showScreen("home");
 });

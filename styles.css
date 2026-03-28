@@ -424,6 +424,84 @@ body {
     object-fit: contain;
 }
 
+/* ── How Long Does It Take? ── */
+.time-question-section {
+    text-align: center;
+    margin: 8px 0 20px;
+}
+
+.time-activity {
+    font-size: 7rem;
+    line-height: 1;
+    margin: 0 auto 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, #fff8e1, #ffe082);
+    border-radius: 50%;
+    box-shadow: 0 8px 28px rgba(255, 180, 0, 0.28), 0 2px 8px rgba(0,0,0,0.08);
+    animation: time-float 2.4s ease-in-out infinite;
+}
+
+@keyframes time-float {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50%       { transform: translateY(-14px) rotate(4deg); }
+}
+
+.time-question-text {
+    font-family: "Baloo 2", cursive;
+    font-size: clamp(1.3rem, 4vw, 1.7rem);
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.time-choices-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.time-choice-btn {
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 10px;
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.time-btn-emoji {
+    font-size: 2.6rem;
+    line-height: 1;
+}
+
+.time-btn-label {
+    font-family: "Baloo 2", cursive;
+    font-size: clamp(1rem, 2.8vw, 1.2rem);
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--ink);
+}
+
+@keyframes time-pop-in {
+    0%   { opacity: 0; transform: scale(0.4) rotate(-8deg); }
+    70%  { transform: scale(1.1) rotate(3deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.time-choice-btn:nth-child(1) { animation: time-pop-in 0.38s ease-out both; }
+.time-choice-btn:nth-child(2) { animation: time-pop-in 0.38s 0.09s ease-out both; }
+.time-choice-btn:nth-child(3) { animation: time-pop-in 0.38s 0.18s ease-out both; }
+
+@media (max-width: 780px) {
+    .time-choices-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .fireworks {
     position: fixed;
     inset: 0;

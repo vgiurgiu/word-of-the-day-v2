@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kid Learning Games</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -33,6 +33,11 @@
                             <span class="emoji" aria-hidden="true">🍽️</span>
                             <span class="title">Hungry Animals</span>
                             <span class="desc">Pick the food this animal can eat.</span>
+                        </button>
+                        <button id="open-time-game" class="game-tile" type="button">
+                            <span class="emoji" aria-hidden="true">⏰</span>
+                            <span class="title">How Long Does It Take?</span>
+                            <span class="desc">Pick the right amount of time.</span>
                         </button>
                     </div>
                 </div>
@@ -131,11 +136,37 @@
                     </div>
                 </div>
             </section>
+
+            <section id="time-screen" class="screen" aria-label="How Long Does It Take? game">
+                <div class="card">
+                    <div class="section-head">
+                        <h2>How Long Does It Take?</h2>
+                        <div class="head-right">
+                            <p id="time-score" class="score-pill" aria-live="polite">Points: 0</p>
+                            <p id="time-highscore" class="score-pill highscore-pill" aria-live="polite">Best: 0</p>
+                            <button class="back-btn" type="button" data-back>Back to Games</button>
+                        </div>
+                    </div>
+                    <section class="time-question-section" aria-live="polite">
+                        <div id="time-activity" class="time-activity"></div>
+                        <p id="time-question-text" class="time-question-text"></p>
+                    </section>
+                    <section aria-label="Time choices">
+                        <div id="time-options" class="choices-grid time-choices-grid"></div>
+                    </section>
+                    <section class="feedback-section">
+                        <p id="time-feedback" class="feedback" role="status"></p>
+                    </section>
+                    <div class="controls">
+                        <button id="next-time-btn" class="primary-btn" type="button">Next Question</button>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
     <div id="fireworks" class="fireworks" aria-hidden="true"></div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
 </body>
 </html>
